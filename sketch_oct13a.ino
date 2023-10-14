@@ -1,23 +1,33 @@
-int led_pin = 13;
-int switch_pin = 12;
+int switchPin = 2; // The pin for the switch
+int ledPin = 13; // The pin for the LED
 
 void setup() {
-  Serial.begin(9600);
-  pinMode(led_pin, OUTPUT);  
-  pinMode(switch_pin, INPUT);  
+  pinMode(switchPin, INPUT_PULLUP); // Set the switch pin as input with pull-up resistor
+  pinMode(ledPin, OUTPUT); // Set the LED pin as output
+
+  Serial.begin(9600); // Start the serial communication
 }
 
 void loop() {
+  // Read the state of the switch
+  int switchState = digitalRead(switchPin);
+
+  // Send switch status to PC
+  Serial.print("Switch status: ");
+  Serial.println(switchState);
+
+  // Look for incoming serial data
   if (Serial.available()) {
-    String command = Serial.readString();  
-    if (command == "led_on\n") {
-      digitalWrite(led_pin, HIGH);   
-    } else if (command == "led_off\n") {
-      digitalWrite(led_pin, LOW);  
+    String command = Serial.readStringUntil('\n');
+
+    if (command == "led_on") {
+      digitalWrite(ledPin, HIGH); // Turn on the LED
+      Serial.println("LED is now ON");
+    } else if (command == "led_off") {
+      digitalWrite(ledPin, LOW); // Turn off the LED
+      Serial.println("LED is now OFF");
     }
   }
-  if (digitalRead(switch_pin) == HIGH) {
-    Serial.println("Switch Pressed");
-    delay(200); 
-  }
+
+  delay(500); // Delay for stability
 }
